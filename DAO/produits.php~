@@ -1,0 +1,95 @@
+<?php
+
+// require_once('../../classes/Produits.php');
+// require_once('../../classes/UtilsDb.php');
+// require_once(__DIR__ . '/../classes/Produits.php');
+// require_once(__DIR__ . '/../classes/UtilsDb.php');
+
+
+/**
+ * classe produits qui represente le pattern DAO
+ * contient les methodes du CRUD
+ * pr inserer, MAJ, recuperer tous ou 1 ergt de la table 
+ * supprimer 1 produit ds la table produits
+ * de la DB
+ */
+
+/**
+ * WARNING: le nom de la classe n'est pas le meme
+ * que le nom du fichier
+ * En PHP cela n'a aucune importance
+ */
+    
+
+class produit {
+
+    // variables
+    private $pdo;
+    private string $table = "produits";
+
+    /**
+     * constructeur qui instancie la classe
+     * UtilsDB.php et qui utilise l'objet pdo
+     */
+    public function __construct() {
+        $utilsDb = new UtilsDB();
+        $this->pdo = $utilsDb->getConnection();
+    }
+
+    /**
+     * methode: insertProduct()
+     * @param $product product to insert into DB
+     *
+     * SQL query to insert into DB
+     */
+    public function insertProduct(Produits $product) {
+        $stmt = $this->pdo->prepare("INSERT INTO $this->table (nom, description, prix, categories_id, created_at, updated_at) VALUES (:nom, :description, :prix, :categories_id, :created_at, :updated_at)");
+        $stmt->bindValue(':nom', $product->getNom());
+        $stmt->bindValue(':description', $product->getDescription());
+        $stmt->bindValue(':prix', $product->getPrix());
+        $stmt->bindValue(':categories_id', $product->getCategoriesId());
+        $stmt->bindValue(':created_at', $product->getCreatedAt()->format('Y-m-d H:i:s'));
+        $stmt->bindValue(':updated_at', $product->getUpdatedAt()->format('Y-m-d H:i:s'));
+        $stmt->execute();
+    }
+
+    /**
+     * methode: mapToObject()
+     * @param $row 1 record from DB
+     * @return Produit product
+     *
+     * Fait la relat° entre les propriétes
+     * de l'instance de la classe Produits.php
+     * et les colonnes de la DB
+     */
+    public function mapToObject($row) {
+        $product = new Produits();
+        $product->setId($row['id']);
+        $product->setNom($row['nom']);
+        $product->setDescription($row['description']);
+        $product->setPrix($row['prix']);
+        $product->setCategoriesId($row['categories_id']);
+        $product->setCreatedAt(new DateTime($row['created_at']));
+        $product->setUpdatedAt(new DateTime($row['updated_at']));
+        return $product;
+    }
+
+    /**
+     * recupere ts les ergts de la DB,
+     * de la table precisée ds les attributs
+     *
+     * @return array $products ts les ergts de la table produits
+     */
+    public function getAllProducts() {
+        $stmt = $this->pdo->prepare("SELECT * FROM $this->table");
+        $stmt->execute();
+        $rows = $stmt->fetchAll();
+        $products = array();
+        foreach ($rows as $row) {
+            $products[] = $this->mapToObject($row);
+        }
+        return $products;
+    }
+}
+
+?>
