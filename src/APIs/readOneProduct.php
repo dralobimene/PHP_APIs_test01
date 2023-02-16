@@ -46,17 +46,23 @@ if($_SERVER['REQUEST_METHOD'] == 'GET') {
     $database = new UtilsDB();
     $db = $database->getConnection();
 
+    // on instancie la classe produit
+    // définie ds le fichier produits.php
+    // (JE NOTE car là c'est clairement de la mvaise
+    // pratique -> erreur de ma part)
     $produit = new produit();
-
-    // On récupère les données reçues
-    // $donnees = json_decode(file_get_contents("php://input"));
-    // RENVOIE NULL
-    // echo json_encode($donnees);
 
     // On vérifie si le produit existe
     if($produit != null){
-        //
+
+        /*
+         * Puisque le produit existe, on récupere son id
+         * depuis la barre d'adresse, on appele ca 1 query param
+         * et on affiche les propriétes en format json
+         */
         $product = $produit->getOneProduct($_GET['id']);
+
+        // Affichage de l'objet en format json
         echo json_encode($product);
     } else {
         echo json_encode(array("message" => "Le produit n'existe pas."));
