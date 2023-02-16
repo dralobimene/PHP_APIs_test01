@@ -11,10 +11,12 @@
 $pages = [
     'create.php',
     'getAll.php',
+    'APIs/readAllProducts.php',
+    'APIs/readOneProduct.php',
 ];
 
 foreach ($pages as $page) {
-    echo "<a href='$page'>$page</a> | ";
+    echo "<a href='$page'>$page</a><br>";
 }
 
 ?>

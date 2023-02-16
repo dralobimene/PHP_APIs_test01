@@ -7,7 +7,9 @@ require_once(__DIR__ . '/../classes/UtilsDb.php');
 
 
 /**
- * classe produits qui represente le pattern DAO
+ * classe produit (ds le fichier "produits", 
+ * ATTENTION à la mauvaise syntaxe)
+ * qui represente le pattern DAO
  * contient les methodes du CRUD
  * pr inserer, MAJ, recuperer tous ou 1 ergt de la table 
  * supprimer 1 produit ds la table produits
@@ -19,7 +21,7 @@ require_once(__DIR__ . '/../classes/UtilsDb.php');
  * que le nom du fichier
  * En PHP cela n'a aucune importance
  */
-    
+
 
 class produit {
 
@@ -90,6 +92,28 @@ class produit {
         }
         return $products;
     }
+
+    /**
+     * Retrieve a single product from the database
+     *
+     * @param int $id The ID of the product to retrieve
+     * @return mixed The product object as an associative array, or false if it doesn't exist
+     */
+    public function getOneProduct($id) {
+        $stmt = $this->pdo->prepare("SELECT * FROM $this->table WHERE id = :id");
+        $stmt->bindValue(':id', $id);
+        $stmt->execute();
+
+        if ($stmt->rowCount() == 0) {
+            return false;
+        }
+
+        $row = $stmt->fetch();
+        $product = $this->mapToObject($row);
+
+        return $product;
+    }
+
 }
 
 ?>

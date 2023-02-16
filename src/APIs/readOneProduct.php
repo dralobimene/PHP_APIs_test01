@@ -46,37 +46,21 @@ if($_SERVER['REQUEST_METHOD'] == 'GET') {
     $database = new UtilsDB();
     $db = $database->getConnection();
 
-    //
-    $produit = new produit(); 
-    // NOTE
-    // RENVOIE 1 ERREUR A CAUSE DES Headers
-    // qui déclarent recevoir un JSON. Les Headers
-    // essayent d'afficher en format json
-    // print_r($produit);
+    $produit = new produit();
 
-    // On récupère les données
-    $productsArray = $produit->getAllProducts();
-    
-    // NOTE
-    // RENVOIE 1 ERREUR A CAUSE DES Headers
-    // qui déclarent recevoir un JSON. Les Headers
-    // essayent d'afficher en format json
-    // var_dump($stmt);
+    // On récupère les données reçues
+    // $donnees = json_decode(file_get_contents("php://input"));
+    // RENVOIE NULL
+    // echo json_encode($donnees);
 
-    // On vérifie si on a au moins 1 produit
-    if(count($productsArray) > 0) {
-
-        echo json_encode($productsArray);
-
-        // On envoie le code réponse 200 OK
-        http_response_code(200);
+    // On vérifie si le produit existe
+    if($produit != null){
+        //
+        $product = $produit->getOneProduct($_GET['id']);
+        echo json_encode($product);
+    } else {
+        echo json_encode(array("message" => "Le produit n'existe pas."));
     }
 
 
-} else {
-    // Mauvaise méthode, on gère l'erreur
-    http_response_code(405);
-    echo json_encode(["message" => "La méthode n'est pas autorisée"]);
 }
-
-?>
